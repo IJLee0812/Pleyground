@@ -1,0 +1,39 @@
+name: Windows
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Line endings
+        shell: bash
+        run: |
+          for f in scripts/emu.sh gradlew; do
+            if grep -qU $'\r' "$f"; then echo "CRLF in $f"; exit 1; fi
+          done
+          for f in scripts/emu.cmd scripts/emu.ps1 gradlew.bat; do
+            if ! grep -qU $'\r' "$f"; then echo "LF-only in $f"; exit 1; fi
+          done
+      - name: PowerShell 5.1 parses emu.ps1
+        shell: powershell
+        run: |
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD\scripts\emu.ps1", [ref]$null, [ref]$errors) | Out-Null
+          if ($errors) { $errors; exit 1 }
+      - name: emu.cmd finds the SDK
+        shell: cmd
+        run: scripts\emu.cmd status
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build
+        shell: cmd
+        run: .\gradlew.bat assembleDebug
