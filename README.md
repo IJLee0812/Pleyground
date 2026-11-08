@@ -22,18 +22,24 @@
 
 ```bash
 scripts/emu.sh start && scripts/emu.sh wait
-./gradlew installDebug
-adb shell am start -n dev.pleyground.hello/.MainActivity
+scripts/emu.sh run    # build, install, launch
 ```
 
-Virtual Console: `scripts/emu.sh console` → http://127.0.0.1:8282
+On Windows use `scripts\emu.cmd` with the same commands.
+
+| Command | What |
+| --- | --- |
+| `console` | Virtual Console at http://127.0.0.1:8282 |
+| `theme day\|night` | Switch the car's day/night mode |
+| `anim 10` | Slow animations down (`anim 1` restores) |
+| `shot file.png` | Screenshot of the app area only |
 
 ## Layout
 
 | Path | What |
 | --- | --- |
 | `app/` | Hello app — reads the driver door position via the Vehicle SDK |
-| `scripts/emu.sh` | Run the emulator from the terminal (`start` · `wait` · `stop` · `status` · `console`) |
+| `scripts/` | Emulator from the terminal: `emu.sh` (macOS / Linux), `emu.cmd` (Windows) |
 | `docs/` | README assets |
 
 ## Requirements
